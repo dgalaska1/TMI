@@ -1,10 +1,10 @@
 {
-  "name": "My Custom Data Feed",
+  "name": "TMI Custom Index",
   "symbols": [
     {
       "name": "TMI",
-      "description": "My custom daily asset",
-      "data": "main/TMI.csv",
+      "description": "Equal-weighted index of ES1!, NQ1!, RTY1!, YM1!",
+      "data": "data/TMI.csv",
       "type": "csv",
       "delimiter": ",",
       "skip": 0
