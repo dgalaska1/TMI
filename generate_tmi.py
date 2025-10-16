@@ -10,7 +10,7 @@ weight = 0.25  # Equal weight (25%)
 # Fetch historical data (1 year)
 end_date = datetime.now()
 start_date = datetime(end_date.year - 1, end_date.month, end_date.day)
-data = {symbol: yf.download(symbol, start=start_date, end=end_date, interval="1d") for symbol in symbols}
+data = {symbol: yf.download(symbol, start=start_date, end=end_date, interval="1d", auto_adjust=False) for symbol in symbols}
 
 # Ensure all symbols have data
 for symbol in symbols:
@@ -21,12 +21,20 @@ for symbol in symbols:
 dfs = [data[symbol][["Open", "High", "Low", "Close", "Volume"]].rename(columns=lambda x: f"{symbol}_{x}") for symbol in symbols]
 aligned_data = pd.concat(dfs, axis=1, join="inner").dropna()
 
+# Debug: Print column names and sample data
+print("Aligned data columns:", aligned_data.columns.tolist())
+print("Sample aligned data:", aligned_data.head().to_string())
+
 # Calculate TMI OHLC and volume
-tmi_open = sum(aligned_data[f"{symbol}_Open"] * weight for symbol in symbols)
-tmi_high = sum(aligned_data[f"{symbol}_High"] * weight for symbol in symbols)
-tmi_low = sum(aligned_data[f"{symbol}_Low"] * weight for symbol in symbols)
-tmi_close = sum(aligned_data[f"{symbol}_Close"] * weight for symbol in symbols)
-tmi_volume = sum(aligned_data[f"{symbol}_Volume"] for symbol in symbols)
+tmi_open = aligned_data[[f"{symbol}_Open" for symbol in symbols]].mean(axis=1)
+tmi_high = aligned_data[[f"{symbol}_High" for symbol in symbols]].mean(axis=1)
+tmi_low = aligned_data[[f"{symbol}_Low" for symbol in symbols]].mean(axis=1)
+tmi_close = aligned_data[[f"{symbol}_Close" for symbol in symbols]].mean(axis=1)
+tmi_volume = aligned_data[[f"{symbol}_Volume" for symbol in symbols]].sum(axis=1)
+
+# Debug: Print shapes of calculated series
+print("tmi_open shape:", tmi_open.shape)
+print("tmi_volume shape:", tmi_volume.shape)
 
 # Create TMI DataFrame
 tmi_df = pd.DataFrame({
