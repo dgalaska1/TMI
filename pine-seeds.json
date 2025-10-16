@@ -1,0 +1,13 @@
+{
+  "name": "My Custom Data Feed",
+  "symbols": [
+    {
+      "name": "TMI",
+      "description": "My custom daily asset",
+      "data": "main/TMI.csv",
+      "type": "csv",
+      "delimiter": ",",
+      "skip": 0
+    }
+  ]
+}
