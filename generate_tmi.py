@@ -17,16 +17,16 @@ for symbol in symbols:
     if data[symbol].empty:
         raise ValueError(f"No data retrieved for {symbol}")
 
-# Align dates across symbols
-dfs = [data[symbol][["Open", "High", "Low", "Close", "Volume"]] for symbol in symbols]
-aligned_data = pd.concat(dfs, axis=1, keys=symbols, join="inner").dropna()
+# Combine data into a single DataFrame with aligned dates
+dfs = [data[symbol][["Open", "High", "Low", "Close", "Volume"]].rename(columns=lambda x: f"{symbol}_{x}") for symbol in symbols]
+aligned_data = pd.concat(dfs, axis=1, join="inner").dropna()
 
 # Calculate TMI OHLC and volume
-tmi_open = sum(aligned_data[(symbol, "Open")] * weight for symbol in symbols)
-tmi_high = sum(aligned_data[(symbol, "High")] * weight for symbol in symbols)
-tmi_low = sum(aligned_data[(symbol, "Low")] * weight for symbol in symbols)
-tmi_close = sum(aligned_data[(symbol, "Close")] * weight for symbol in symbols)
-tmi_volume = sum(aligned_data[(symbol, "Volume")] for symbol in symbols)
+tmi_open = sum(aligned_data[f"{symbol}_Open"] * weight for symbol in symbols)
+tmi_high = sum(aligned_data[f"{symbol}_High"] * weight for symbol in symbols)
+tmi_low = sum(aligned_data[f"{symbol}_Low"] * weight for symbol in symbols)
+tmi_close = sum(aligned_data[f"{symbol}_Close"] * weight for symbol in symbols)
+tmi_volume = sum(aligned_data[f"{symbol}_Volume"] for symbol in symbols)
 
 # Create TMI DataFrame
 tmi_df = pd.DataFrame({
